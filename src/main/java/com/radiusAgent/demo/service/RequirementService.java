@@ -30,18 +30,25 @@ public class RequirementService {
 		for (Property p : propertyRepository.findAll()) {
 			ParameterPercentage param = new ParameterPercentage();
 			calculateAndSetDistancePercent(param, p, r);
+
 			calculateAndSetBudgetPercent(param, p, r);
+
 			calculateBathroomPercent(param, p, r);
+
 			calculateBedroomPercent(param, p, r);
+
 			calculateTotalPercent(param);
 			// setProperty
 			param.setProperty(p);
+
 			paramPercentage.add(param);
 
 		}
 		// if total percentage is >= 40, then only consider valid property to
 		// show to customer
 		for (ParameterPercentage param : paramPercentage) {
+			System.out.println(param.getDistance() + " " + param.getBudget()
+					+ " " + param.getBedRoom() + " " + param.getBathRoom());
 			if (param.getTotal() >= 40) {
 				validProperties.add(param.getProperty());
 			}
@@ -82,10 +89,16 @@ public class RequirementService {
 				r.getLatitude(), r.getLongitude(), p.getLatitude(),
 				p.getLongitude());
 
-		if (distanceInMiles < 2) {
-			param.setDistance(30.00);
-		}
+		if (distanceInMiles < 10) {
+			if (distanceInMiles <= 2) {
+				param.setDistance(30.00);
+			}
 
+			param.setDistance(60 / distanceInMiles);
+		} else {
+
+			param.setDistance(0.0);
+		}
 	}
 
 	public void calculateAndSetBudgetPercent(ParameterPercentage param,
@@ -95,15 +108,46 @@ public class RequirementService {
 			if (p.getPrice() >= r.getMinBudget()
 					&& p.getPrice() <= r.getMaxBudget()) {
 				param.setBudget(30.00);
+			} else {
+				param.setBudget(0.0);
 			}
 		} else {
 
 			// +- 25% for checking valid match
-			Double budget = r.getMaxBudget() == null ? r.getMinBudget() : r
+			double budget = r.getMaxBudget() == null ? r.getMinBudget() : r
 					.getMaxBudget();
 
 			// calculatePercentage
 			// within 10%, then 30% match
+			double validMinBudget = (budget * 3) / 4;
+			double validMaxBudget = (budget * 5) / 4;
+			double propertyPrice = p.getPrice();
+
+			if (propertyPrice >= validMinBudget
+					&& propertyPrice <= validMaxBudget) {
+
+				double within10MinBudget = (budget * 9) / 10;
+				double within10MaxBudget = (budget * 11) / 10;
+				if (propertyPrice >= within10MinBudget
+						&& propertyPrice <= within10MaxBudget) {
+					param.setBudget(30.00);
+				}
+
+				// calculate actual percent like more than 10 and less than 25,
+				// and then divide by 300%
+				double actualPercentDiff;
+				if (propertyPrice > budget) {
+					actualPercentDiff = ((propertyPrice - budget) * 100)
+							/ budget;
+				} else {
+					actualPercentDiff = ((budget - propertyPrice) * 100)
+							/ budget;
+				}
+
+				param.setBudget(300 / actualPercentDiff);
+			} else {
+				param.setBudget(0.0);
+			}
 
 		}
 
@@ -116,17 +160,32 @@ public class RequirementService {
 		// contribution is 20%
 		if (r.getMinBathRoom() != null && r.getMaxBathRoom() != null) {
 			if (p.getNoOfBathRooms() >= r.getMinBathRoom()
-					&& p.getNoOfBathRooms() <= r.getMinBathRoom()) {
-				param.setBudget(20.00);
+					&& p.getNoOfBathRooms() <= r.getMaxBathRoom()) {
+				param.setBathRoom(20.00);
 			} else {
-
+				param.setBathRoom(0.0);
 			}
 		} else {
 
 			Integer bathRoom = r.getMinBathRoom() == null ? r.getMaxBathRoom()
 					: r.getMinBathRoom();
-			// calculatePercentage
-			if (bathRoom - 2 > 0) {
+			// calculatePercentage if property
+			if (bathRoom - 2 >= 0) {
+
+				if (p.getNoOfBathRooms() >= (bathRoom - 2)
+						&& p.getNoOfBathRooms() <= (bathRoom + 2)) {
+
+					if (p.getNoOfBathRooms() == bathRoom) {
+						param.setBathRoom(20.00);
+					} else if (Math.abs(p.getNoOfBathRooms() - bathRoom) == 1) {
+						param.setBathRoom(10.00);
+					} else if (Math.abs(p.getNoOfBathRooms() - bathRoom) == 2) {
+						param.setBathRoom(5.00);
+					}
+
+				} else {
+					param.setBathRoom(0.0);
+				}
 
 			}
 
@@ -141,22 +200,34 @@ public class RequirementService {
 		// contribution is 20%
 		if (r.getMinBedRoom() != null && r.getMaxBedRoom() != null) {
 			if (p.getNoOfBedRooms() >= r.getMinBedRoom()
-					&& p.getNoOfBedRooms() <= r.getMinBedRoom()) {
-				param.setBudget(20.00);
+					&& p.getNoOfBedRooms() <= r.getMaxBedRoom()) {
+				param.setBedRoom(20.00);
 			} else {
-
+				param.setBedRoom(0.0);
 			}
 		} else {
 
 			Integer bedRoom = r.getMinBedRoom() == null ? r.getMaxBedRoom() : r
 					.getMinBedRoom();
 			// calculatePercentage
-			if (bedRoom - 2 > 0) {
+			if (bedRoom - 2 >= 0) {
+				if (p.getNoOfBedRooms() >= (bedRoom - 2)
+						&& p.getNoOfBedRooms() <= (bedRoom + 2)) {
 
+					if (p.getNoOfBedRooms() == bedRoom) {
+						param.setBedRoom(20.00);
+					} else if (Math.abs(p.getNoOfBedRooms() - bedRoom) == 1) {
+						param.setBedRoom(10.00);
+					} else if (Math.abs(p.getNoOfBedRooms() - bedRoom) == 2) {
+						param.setBedRoom(5.00);
+					}
+
+				} else {
+					param.setBedRoom(0.0);
+				}
 			}
 
 		}
-
 	}
 
 	public void calculateTotalPercent(ParameterPercentage param) {

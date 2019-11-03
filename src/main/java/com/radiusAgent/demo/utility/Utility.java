@@ -7,6 +7,7 @@ public class Utility {
 			double reqLongitude, double propertyLatitude,
 			double propertyLongitude) {
 
+		// inBuilt Math functions used
 		reqLatitude = Math.toRadians(reqLatitude);
 		reqLongitude = Math.toRadians(reqLongitude);
 		propertyLatitude = Math.toRadians(propertyLatitude);

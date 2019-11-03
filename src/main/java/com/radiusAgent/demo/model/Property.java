@@ -5,6 +5,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+
+import org.springframework.lang.NonNull;
 
 @Entity
 @Table(name = "PROPERTY_TABLE")
@@ -13,21 +16,27 @@ public class Property {
 	@Id
 	@GeneratedValue
 	@Column(name = "id")
+	@NotNull
 	private Integer id;
 
 	@Column(name = "latitude")
+	@NotNull
 	private Double latitude;
 
 	@Column(name = "longitude")
+	@NotNull
 	private Double longitude;
 
 	@Column(name = "price")
+	@NotNull
 	private Double price;
 
 	@Column(name = "noOfBedRooms")
+	@NotNull
 	private Integer noOfBedRooms;
 
 	@Column(name = "noOfBathRooms")
+	@NotNull
 	private Integer noOfBathRooms;
 
 	public Integer getId() {
