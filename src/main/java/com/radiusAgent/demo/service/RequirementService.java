@@ -29,6 +29,7 @@ public class RequirementService {
 		List<ParameterPercentage> paramPercentage = new ArrayList<ParameterPercentage>();
 		for (Property p : propertyRepository.findAll()) {
 			ParameterPercentage param = new ParameterPercentage();
+			
 			calculateAndSetDistancePercent(param, p, r);
 
 			calculateAndSetBudgetPercent(param, p, r);
@@ -88,13 +89,18 @@ public class RequirementService {
 		double distanceInMiles = Utility.getDistanceFromLatLonInMiles(
 				r.getLatitude(), r.getLongitude(), p.getLatitude(),
 				p.getLongitude());
-
+		// for validMatch distance within 10 miles
 		if (distanceInMiles < 10) {
+			// for 30% contribution, distance within 2 miles
 			if (distanceInMiles <= 2) {
 				param.setDistance(30.00);
 			}
-
-			param.setDistance(60 / distanceInMiles);
+			// 2 miles-> 30%
+			// 1 mile-> 60%
+			// x mile -> 60/x%
+			param.setDistance(60 / distanceInMiles); // for miles greater than 2
+														// and less than 10,
+														// percent contribution
 		} else {
 
 			param.setDistance(0.0);
@@ -118,7 +124,7 @@ public class RequirementService {
 					.getMaxBudget();
 
 			// calculatePercentage
-			// within 10%, then 30% match
+			// valid match +- 25%
 			double validMinBudget = (budget * 3) / 4;
 			double validMaxBudget = (budget * 5) / 4;
 			double propertyPrice = p.getPrice();
@@ -126,6 +132,7 @@ public class RequirementService {
 			if (propertyPrice >= validMinBudget
 					&& propertyPrice <= validMaxBudget) {
 
+				// calculating within +-10% match
 				double within10MinBudget = (budget * 9) / 10;
 				double within10MaxBudget = (budget * 11) / 10;
 				if (propertyPrice >= within10MinBudget
@@ -134,7 +141,9 @@ public class RequirementService {
 				}
 
 				// calculate actual percent like more than 10 and less than 25,
-				// and then divide by 300%
+				// for 10% -> 30%
+				// for 1% -> 300%
+				// for x% -> 300/x
 				double actualPercentDiff;
 				if (propertyPrice > budget) {
 					actualPercentDiff = ((propertyPrice - budget) * 100)
@@ -166,7 +175,7 @@ public class RequirementService {
 				param.setBathRoom(0.0);
 			}
 		} else {
-
+			// if either min or max is given, then for valid property +-2
 			Integer bathRoom = r.getMinBathRoom() == null ? r.getMaxBathRoom()
 					: r.getMinBathRoom();
 			// calculatePercentage if property
@@ -175,11 +184,26 @@ public class RequirementService {
 				if (p.getNoOfBathRooms() >= (bathRoom - 2)
 						&& p.getNoOfBathRooms() <= (bathRoom + 2)) {
 
-					if (p.getNoOfBathRooms() == bathRoom) {
+					if (p.getNoOfBathRooms() == bathRoom) { // if exact match ,
+															// then 20%
 						param.setBathRoom(20.00);
-					} else if (Math.abs(p.getNoOfBathRooms() - bathRoom) == 1) {
+					} else if (Math.abs(p.getNoOfBathRooms() - bathRoom) == 1) { // if
+																					// one
+																					// less
+																					// or
+																					// more,
+																					// the
+																					// contribution
+																					// 10%
 						param.setBathRoom(10.00);
-					} else if (Math.abs(p.getNoOfBathRooms() - bathRoom) == 2) {
+					} else if (Math.abs(p.getNoOfBathRooms() - bathRoom) == 2) { // if
+																					// on
+																					// boundaries
+																					// of
+																					// validProperty,
+																					// the
+																					// contribution
+																					// 5%
 						param.setBathRoom(5.00);
 					}
 
@@ -206,7 +230,7 @@ public class RequirementService {
 				param.setBedRoom(0.0);
 			}
 		} else {
-
+			// if either min or max is given, then for valid property +-2
 			Integer bedRoom = r.getMinBedRoom() == null ? r.getMaxBedRoom() : r
 					.getMinBedRoom();
 			// calculatePercentage
@@ -215,11 +239,14 @@ public class RequirementService {
 						&& p.getNoOfBedRooms() <= (bedRoom + 2)) {
 
 					if (p.getNoOfBedRooms() == bedRoom) {
-						param.setBedRoom(20.00);
+						param.setBedRoom(20.00); // if exact match , then 20%
 					} else if (Math.abs(p.getNoOfBedRooms() - bedRoom) == 1) {
-						param.setBedRoom(10.00);
+						param.setBedRoom(10.00); // if one less or more, the
+													// contribution 10%
 					} else if (Math.abs(p.getNoOfBedRooms() - bedRoom) == 2) {
-						param.setBedRoom(5.00);
+						param.setBedRoom(5.00); // if on boundaries of
+												// validProperty, the
+												// contribution 5%
 					}
 
 				} else {
@@ -230,6 +257,8 @@ public class RequirementService {
 		}
 	}
 
+	// calculation of all contribution of percentages and then adding them and
+	// storing in a field
 	public void calculateTotalPercent(ParameterPercentage param) {
 		param.setTotal(param.getBathRoom() + param.getBedRoom()
 				+ param.getBudget() + param.getDistance());
