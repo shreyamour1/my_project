@@ -1,4 +1,4 @@
-package com.radiusAgent.demo;
+package com.pratilipi.demo;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -1,4 +1,4 @@
-package com.radiusAgent.demo;
+package com.pratilipi.demo;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
