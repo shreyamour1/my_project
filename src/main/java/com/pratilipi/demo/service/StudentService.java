@@ -16,7 +16,7 @@ public class StudentService {
 	@Autowired
 	StudentRepository studentRepository;
 
-	public Student createOrUpdatestudent(Student i) {
+	public Student createOrUpdateStudent(Student i) {
 
 		Optional<Student> student = studentRepository.findById(i.getId());
 
@@ -50,10 +50,21 @@ public class StudentService {
 		}
 	}
 
-	public List<Student> getAllProperties() {
+	public List<Student> getAllStudents() {
 		List<Student> allStudents = studentRepository.findAll();
 		if (allStudents.size() > 0) {
 			return allStudents;
+		} else {
+			throw new NoStudentException("No such student exist");
+		}
+	}
+	
+	
+	public Student getStudentByName(String name) {
+		Optional<Student> item = studentRepository.findById(id);
+
+		if (item.isPresent()) {
+			return item.get();
 		} else {
 			throw new NoStudentException("No such student exist");
 		}

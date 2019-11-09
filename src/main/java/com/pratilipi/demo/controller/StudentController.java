@@ -26,27 +26,33 @@ public class StudentController {
 
 	@PostMapping("/")
 	public ResponseEntity<Student> createorUpdate(@RequestBody Student student) {
-		Student updated = studentService.createOrUpdatestudent(student);
+		Student updated = studentService.createOrUpdateStudent(student);
 		return new ResponseEntity<Student>(updated, new HttpHeaders(), HttpStatus.OK);
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<Student> getstudentById(@PathVariable("id") Integer id) {
+	public ResponseEntity<Student> getStudentById(@PathVariable("id") Integer id) {
 		Student entity = studentService.getStudentById(id);
-
 		return new ResponseEntity<Student>(entity, new HttpHeaders(), HttpStatus.OK);
 	}
 
 	@DeleteMapping("/{id}")
-	public HttpStatus deletestudentById(@PathVariable("id") Integer id) {
+	public HttpStatus deleteStudentById(@PathVariable("id") Integer id) {
 		studentService.deleteStudentById(id);
 		return HttpStatus.FORBIDDEN;
 	}
 
 	@GetMapping
-	public ResponseEntity<List<Student>> getAllProperties() {
-		List<Student> list = studentService.getAllProperties();
+	public ResponseEntity<List<Student>> getAllStudents() {
+		List<Student> list = studentService.getAllStudents();
 
 		return new ResponseEntity<List<Student>>(list, new HttpHeaders(), HttpStatus.OK);
+	}
+	
+	//get student by name
+	@GetMapping("/{name}")
+	public ResponseEntity<Student> getStudentByName(@PathVariable("name") String name) {
+		Student entity = studentService.getStudentById(name);
+		return new ResponseEntity<Student>(entity, new HttpHeaders(), HttpStatus.OK);
 	}
 }
