@@ -1,0 +1,27 @@
+<div class="card my-5">
+  <div class="card-body">
+    <table class="table table-bordered table-striped">
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col">Id</th>
+          <th scope="col">Name</th>
+          <th scope="col">Batch</th>
+          <th scope="col">UniversityId</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr [ngClass]="{student: student}">
+          <td>{{ student.id }}</td>
+          <td>{{ student.name }}</td>
+          <td>{{ student.batch }}</td>
+          <div>
+            <ul class="text-center list-inline py-3">
+              <a [routerLink]="['university', student.universityId]"
+                routerLinkActive="active">{{ student.universityId }}</a>
+            </ul>
+          </div>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
