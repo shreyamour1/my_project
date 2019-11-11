@@ -1,0 +1,22 @@
+<div class="card my-5">
+  <div class="card-body">
+    <table class="table table-bordered table-striped">
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col">University_Id</th>
+          <th scope="col">Total_View_Count</th>
+          <th scope="col">University_Name</th>
+          <th scope="col">Address</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr [ngClass]="{university: university}">
+          <td>{{ university.id }}</td>
+          <td>{{ university.totalViewCount }}</td>
+		  <td>{{ university.universityName }}</td>
+		  <td>{{ university.address }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
